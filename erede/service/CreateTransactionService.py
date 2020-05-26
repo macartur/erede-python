@@ -12,6 +12,6 @@ class CreateTransactionService(TransactionService):
 
         self.transaction = transaction
 
-    def execute(self):
-        return self.send_request(TransactionService.POST, self.transaction.to_json())
+    async def execute(self):
+        return await self.send_request(TransactionService.POST, self.transaction.to_json())
 

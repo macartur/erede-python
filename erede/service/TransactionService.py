@@ -1,4 +1,4 @@
-import requests
+import httpx
 import erede
 
 from erede.Transaction import Transaction
@@ -17,28 +17,28 @@ class TransactionService:
         """
         self.store = store
 
-    def execute(self):
+    async def execute(self):
         raise NotImplementedError("Not implemented")
 
     def get_uri(self):
         return "{}/transactions".format(self.store.environment.endpoint)
 
-    def send_request(self, method, body=None):
-        headers = {'User-Agent': "{} Store/{}".format(erede.eRede.USER_AGENT, self.store.filliation),
+    async def send_request(self, method, body=None):
+        user_agent = "{} Store/{}".format(erede.eRede.USER_AGENT,
+                                          self.store.filliation)
+
+        headers = {'User-Agent': user_agent,
                    "Accept": "application/json",
                    "Content-Type": "application/json"}
 
-        response = getattr(requests, method)(self.get_uri(),
-                                             auth=(self.store.filliation, self.store.token),
-                                             data=body,
-                                             headers=headers)
-        '''
-        :type response: `requests.Response`
-        '''
-
+        client = httpx.AsyncClient()
+        auth = (self.store.filliation, self.store.token)
+        response = await getattr(client, method)(self.get_uri(),
+                                                 auth=auth,
+                                                 data=body,
+                                                 headers=headers)
         if response.status_code >= 400:
             error = response.json()
-
-            raise RedeError(error.get("returnMessage", "opz"), error.get("returnCode", 0))
-
+            raise RedeError(error.get("returnMessage", "opz"),
+                            error.get("returnCode", 0))
         return Transaction.unserialize(response.json())
