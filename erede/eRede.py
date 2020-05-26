@@ -11,10 +11,10 @@ class eRede:
         """
         self.store = store
 
-    def authorize(self, transaction):
-        return self.create(transaction)
+    async def authorize(self, transaction):
+        return await self.create(transaction)
 
-    def create(self, transaction):
+    async def create(self, transaction):
         """Create a transaction
 
         :type transaction: `erede.Transaction.Transaction`
@@ -22,9 +22,9 @@ class eRede:
         """
         create_transaction = CreateTransactionService(self.store, transaction)
 
-        return create_transaction.execute()
+        return await create_transaction.execute()
 
-    def cancel(self, transaction):
+    async def cancel(self, transaction):
         """Cancel a Transaction
 
         :type transaction: `erede.Transaction.Transaction`
@@ -33,9 +33,9 @@ class eRede:
 
         cancel_transaction = CancelTransactionService(self.store, transaction)
 
-        return cancel_transaction.execute()
+        return await cancel_transaction.execute()
 
-    def capture(self, transaction):
+    async def capture(self, transaction):
         """Capture a Transaction
 
         :type transaction: `erede.Transaction.Transaction`
@@ -44,9 +44,9 @@ class eRede:
 
         capture_transaction = CaptureTransactionService(self.store, transaction)
 
-        return capture_transaction.execute()
+        return await capture_transaction.execute()
 
-    def get_by_tid(self, tid):
+    async def get_by_tid(self, tid):
         """Get a Transaction by its TID
 
         :type transaction: `erede.Transaction.Transaction`
@@ -56,9 +56,9 @@ class eRede:
         get_transaction = GetTransactionService(self.store)
         get_transaction.tid = tid
 
-        return get_transaction.execute()
+        return await get_transaction.execute()
 
-    def get_by_reference(self, reference):
+    async def get_by_reference(self, reference):
         """Get a Transaction by its reference
 
         :type transaction: `erede.Transaction.Transaction`
@@ -68,9 +68,9 @@ class eRede:
         get_transaction = GetTransactionService(self.store)
         get_transaction.reference = reference
 
-        return get_transaction.execute()
+        return await get_transaction.execute()
 
-    def get_refunds(self, tid):
+    async def get_refunds(self, tid):
         """Get a Transaction refunds
 
         :type transaction: `erede.Transaction.Transaction`
@@ -81,9 +81,9 @@ class eRede:
         get_transaction.tid = tid
         get_transaction.refunds = True
 
-        return get_transaction.execute()
+        return await get_transaction.execute()
 
-    def zero(self, transaction):
+    async def zero(self, transaction):
         """Verify a card
 
         :type transaction: `erede.Transaction.Transaction`
@@ -96,7 +96,7 @@ class eRede:
         transaction.amount = 0
         transaction.capture = True
 
-        transaction = self.create(transaction)
+        transaction = await self.create(transaction)
 
         transaction.amount = amount
         transaction.capture = capture
